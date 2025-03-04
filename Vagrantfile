@@ -93,6 +93,34 @@ Vagrant.configure("2") do |config|
         node.vm.provision "shell", path: "scripts/dashboard.sh"
       end
     end
-
+  end
+ 
+  config.vm.define "runner" do |runner|
+    runner.vm.hostname = "runner"
+    runner.vm.network "private_network", ip: settings["network"]["runner_ip"]
+    runner.vm.network "forwarded_port", guest: 8080, host: 8080, guest_ip: "10.0.0.50", host_ip: "127.0.0.1"
+    runner.vm.network "forwarded_port", guest: 8001, host: 8001, guest_ip: "10.0.0.50", host_ip: "127.0.0.1"
+    if settings["shared_folders"]
+      settings["shared_folders"].each do |shared_folder|
+        runner.vm.synced_folder shared_folder["host_path"], shared_folder["vm_path"]
+      end
+    end
+    runner.vm.provider "virtualbox" do |vb|
+      vb.cpus = settings["nodes"]["runner"]["cpu"]
+      vb.memory = settings["nodes"]["runner"]["memory"]
+      if settings["cluster_name"] and settings["cluster_name"] != ""
+        vb.customize ["modifyvm", :id, "--groups", ("/" + settings["cluster_name"])]
+      end
+    end
+    runner.vm.provision "shell",
+      env: {
+        "DNS_SERVERS" => settings["network"]["dns_servers"].join(" "),
+        "ENVIRONMENT" => settings["environment"],
+        "KUBERNETES_VERSION" => settings["software"]["kubernetes"],
+        "KUBERNETES_VERSION_SHORT" => settings["software"]["kubernetes"][0..3],
+        "OS" => settings["software"]["os"]
+      },
+      path: "scripts/common.sh"
+    runner.vm.provision "shell", path: "scripts/runner.sh"
   end
 end 

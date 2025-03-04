@@ -8,9 +8,11 @@ cluster_name: Kubernetes Cluster
 #   HTTPS_PROXY=http://my-proxy:8000
 #   NO_PROXY=127.0.0.1,localhost,master-node,node01,node02,node03
 # All IPs/CIDRs should be private and allowed in /etc/vbox/networks.conf.
+
 network:
   # Worker IPs are simply incremented from the control IP.
   control_ip: 10.0.0.10
+  runner_ip: 10.0.0.50
   dns_servers:
     - 8.8.8.8
     - 1.1.1.1
@@ -22,13 +24,18 @@ nodes:
     memory: 4096
   workers:
     count: 2
-    cpu: 1
+    cpu: 2
     memory: 2048
+  runner:
+    cpu: 1
+    memory: 1024
+
 # Mount additional shared folders from the host into each virtual machine.
 # Note that the project directory is automatically mounted at /vagrant.
 # shared_folders:
 #   - host_path: ../images
 #     vm_path: /vagrant/images
+
 software:
   box: bento/ubuntu-24.04
   calico: 3.26.0
