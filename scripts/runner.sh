@@ -5,8 +5,8 @@
 set -euxo pipefail
 
 # Variables
-REPO_URL="https://github.com/oldmxnk/k8s-vagrant"
-API_URL="https://api.github.com/repos/oldmxnk/k8s-vagrant"
+REPO_URL="https://github.com/oldmxnk/vagrant-k8s"
+API_URL="https://api.github.com/repos/oldmxnk/vagrant-k8s"
 
 GITHUB_TOKEN=""
 
